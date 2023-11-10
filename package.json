@@ -51,12 +51,7 @@
     "hpp": "^0.2.3",
     "http-status": "^1.6.2",
     "jsonwebtoken": "^9.0.1",
-    "pino": "^8.14.1",
-    "pino-pretty": "^10.0.0",
     "prisma": "^5.1.1",
-    "redis": "^4.6.10",
-    "rotating-file-stream": "^3.1.0",
-    "sslcommerz-lts": "^1.1.0",
     "zod": "^3.21.4"
   },
   "lint-staged": {
