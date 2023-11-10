@@ -1,7 +1,7 @@
 {
-  "name": "smart-edu-payment-service",
+  "name": "next-door-bd",
   "version": "1.0.0",
-  "description": "SmartEdu: Streamlined Education Management Software",
+  "description": "",
   "main": "src/index.js",
   "scripts": {
     "dev": "set NODE_ENV=development&&ts-node-dev --files --rs --poll ./src/index.ts",

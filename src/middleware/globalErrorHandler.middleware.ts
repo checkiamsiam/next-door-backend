@@ -2,7 +2,6 @@ import { ErrorRequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import config from "../config";
 import AppError from "../utils/customError.util";
-import { printError } from "../utils/customLogger.util";
 import sendResponse from "../utils/sendResponse.util";
 
 type THandleErrorFunc = (err: any, res?: Response) => AppError;
@@ -33,7 +32,7 @@ const sendErrorProd: THandleErrorResponse = (err, res) => {
       message: "Something went wrong",
     });
   } else {
-    printError.error("Error 💥" + err);
+    console.error("Error 💥" + err);
     // 2. Send generic message to client
     sendResponse(res, {
       statusCode: httpStatus.INTERNAL_SERVER_ERROR,

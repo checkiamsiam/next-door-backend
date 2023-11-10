@@ -7,21 +7,146 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Payment {
+model User {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(customer)
+  phone    String
+  adress   String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  orders    Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  title         String
+  icon          String
+  isFeatured    Boolean       @default(false)
+  createdAt     DateTime?     @default(now())
+  updatedAt     DateTime?     @updatedAt
+  subCategories SubCategory[]
+  brands        Brand[]
+  products      Product[]
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id         String    @id @default(uuid())
+  title      String
+  icon       String
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  isFeatured Boolean   @default(false)
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+  products   Product[]
+
+  @@map("sub_categories")
+}
+
+model Brand {
+  id         String    @id @default(uuid())
+  title      String
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+  products   Product[]
+
+  @@map("brands")
+}
+
+model Product {
+  id                String          @id @default(uuid())
+  title             String
+  regularPrice      String
+  salesPrice        Float
+  thumbnail         String
+  images            Json
+  status            ProductStatus   @default(inStock)
+  discription       String
+  campaign          ProductCampaign @default(regular)
+  keyFeatures       Json
+  besicSpecifiction Json
+  categoryId        String
+  category          Category        @relation(fields: [categoryId], references: [id])
+  subCategoryId     String
+  subCategory       SubCategory     @relation(fields: [subCategoryId], references: [id])
+  brandId           String
+  brand             Brand           @relation(fields: [brandId], references: [id])
+  createdAt         DateTime?       @default(now())
+  updatedAt         DateTime?       @updatedAt
+  orderItems        OrderItem[]
+
+  @@map("products")
+}
+
+model Order {
   id                 String        @id @default(uuid())
-  amount             Int
-  studentId          String
-  status             PaymentStatus @default(PANDING)
-  transactionId      String
-  paymentGatewayData Json?
+  userId             String
+  user               User          @relation(fields: [userId], references: [id])
+  recipientFirstName String
+  recipientLastName  String
+  recipientPhone     String
+  recipientEmail     String
+  recipientThana     String
+  recipientDivision  String
+  totalPrice         Float
+  paymentStatus      paymentStatus @default(pending)
+  shipingStatus      shipingStatus @default(pending)
+
+  createdAt  DateTime?   @default(now())
+  updatedAt  DateTime?   @updatedAt
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  quantity  Int
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
-  @@map("payments")
+  @@id([orderId, productId])
+  @@map("order_items")
 }
 
-enum PaymentStatus {
-  PANDING
-  PAID
+enum shipingStatus {
+  pending
+  shiping
+  delivered
+}
+
+enum paymentStatus {
+  pending
+  paid
+  advancedSomething
+}
+
+enum ProductCampaign {
+  featured
+  regular
+  flashSale
+}
+
+enum ProductStatus {
+  inStock
+  outOfStock
+}
+
+enum UserRole {
+  admin
+  customer
 }

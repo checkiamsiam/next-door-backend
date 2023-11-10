@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Welcome to smart edu server",
+    message: "Welcome to next door server",
   });
 });
 
