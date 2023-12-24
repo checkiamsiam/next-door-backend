@@ -3,11 +3,7 @@
   "builds": [
     {
       "src": "dist/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "buildCommand": "npm run build"
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
