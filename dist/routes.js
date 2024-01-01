@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const auth_route_1 = __importDefault(require("./modules/auth/auth.route"));
 const brand_route_1 = __importDefault(require("./modules/brand/brand.route"));
+const campaign_route_1 = __importDefault(require("./modules/campaign/campaign.route"));
 const category_route_1 = __importDefault(require("./modules/category/category.route"));
 const notification_route_1 = __importDefault(require("./modules/notification/notification.route"));
 const product_route_1 = __importDefault(require("./modules/product/product.route"));
@@ -37,6 +38,10 @@ const routes = [
     {
         path: "/product",
         route: product_route_1.default,
+    },
+    {
+        path: "/campaign",
+        route: campaign_route_1.default,
     },
     {
         path: "/search",

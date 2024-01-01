@@ -140,7 +140,7 @@ model Product {
 }
 
 model Campaign {
-  id                 String        @unique
+  id                 String       @unique
   name               String
   description        String?
   banner             String?

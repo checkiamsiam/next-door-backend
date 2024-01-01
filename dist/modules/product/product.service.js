@@ -61,7 +61,14 @@ const create = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getProducts = (queryFeatures) => __awaiter(void 0, void 0, void 0, function* () {
     const whereConditions = prisma_helper_1.default.findManyQueryHelper(queryFeatures, {
-        searchFields: ["title"],
+        searchFields: [
+            "title",
+            "description",
+            "keyFeatures",
+            "specifications",
+            "salePrice",
+            "regularPrice",
+        ],
         relationalFields: {
             categoryId: "category",
             brandId: "brand",
