@@ -39,22 +39,19 @@ const create = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const generatedId = (0, generateId_util_1.generateNewID)("CN", (_a = latestPost[0]) === null || _a === void 0 ? void 0 : _a.id);
         payload.id = generatedId;
         const { freeItems } = payload, campaignData = __rest(payload, ["freeItems"]);
-        if (campaignData.type === client_1.CampaignType.discountPercentage &&
-            !campaignData.discountPercentage) {
+        if (campaignData.type === client_1.CampaignType.discountPercentage && !campaignData.discountPercentage) {
             throw new customError_util_1.default("Discount Percentage is required", http_status_1.default.BAD_REQUEST);
         }
         else {
             campaignData.discountPercentage = parseInt(campaignData.discountPercentage);
         }
-        if (campaignData.type === client_1.CampaignType.discountPrice &&
-            !campaignData.discountPrice) {
+        if (campaignData.type === client_1.CampaignType.discountPrice && !campaignData.discountPrice) {
             throw new customError_util_1.default("Discount Price is required", http_status_1.default.BAD_REQUEST);
         }
         else {
             campaignData.discountPrice = parseInt(campaignData.discountPrice);
         }
-        if (campaignData.type === client_1.CampaignType.buyToGetFree &&
-            (!freeItems || freeItems.length === 0)) {
+        if (campaignData.type === client_1.CampaignType.buyToGetFree && (!freeItems || freeItems.length === 0)) {
             throw new customError_util_1.default("Free items is not defined", http_status_1.default.BAD_REQUEST);
         }
         const result = yield txc.campaign.create({
@@ -82,8 +79,7 @@ const getCampaigns = (queryFeatures) => __awaiter(void 0, void 0, void 0, functi
         take: queryFeatures.limit || undefined,
         orderBy: queryFeatures.sort,
     };
-    if (queryFeatures.populate &&
-        Object.keys(queryFeatures.populate).length > 0) {
+    if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
         query.include = {
             _count: true,
             freeItems: {
@@ -103,10 +99,7 @@ const getCampaigns = (queryFeatures) => __awaiter(void 0, void 0, void 0, functi
             query.select = Object.assign({ id: true }, queryFeatures.fields);
         }
     }
-    const [result, count] = yield prismaClient_1.default.$transaction([
-        prismaClient_1.default.campaign.findMany(query),
-        prismaClient_1.default.campaign.count({ where: whereConditions }),
-    ]);
+    const [result, count] = yield prismaClient_1.default.$transaction([prismaClient_1.default.campaign.findMany(query), prismaClient_1.default.campaign.count({ where: whereConditions })]);
     return {
         data: result,
         total: count,
@@ -118,8 +111,7 @@ const getSingleCampaign = (id, queryFeatures) => __awaiter(void 0, void 0, void 
             id,
         },
     };
-    if (queryFeatures.populate &&
-        Object.keys(queryFeatures.populate).length > 0) {
+    if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
         const queryFeaturePopulateCopy = Object.assign({}, queryFeatures.populate);
         query.include = Object.assign({ _count: true }, queryFeaturePopulateCopy);
     }
@@ -131,9 +123,31 @@ const getSingleCampaign = (id, queryFeatures) => __awaiter(void 0, void 0, void 
     const result = yield prismaClient_1.default.campaign.findUnique(query);
     return result;
 });
+const addProduct = (id, products) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prismaClient_1.default.$transaction((txc) => __awaiter(void 0, void 0, void 0, function* () {
+        const campaignItems = products.map((item) => {
+            return Object.assign(Object.assign({}, item), { campaignId: id });
+        });
+        const result = yield txc.campaign.update({
+            where: {
+                id,
+            },
+            data: {
+                products: {
+                    createMany: {
+                        data: campaignItems,
+                    },
+                },
+            },
+        });
+        return result;
+    }));
+    return result;
+});
 const campaignService = {
     create,
     getCampaigns,
     getSingleCampaign,
+    addProduct,
 };
 exports.default = campaignService;

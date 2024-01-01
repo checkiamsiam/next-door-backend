@@ -23,11 +23,7 @@ const create = zod_1.z
         invalid_type_error: "tagline is not valid",
         required_error: "tagline is required",
     }),
-    type: zod_1.z.enum([
-        client_1.CampaignType.buyToGetFree,
-        client_1.CampaignType.discountPercentage,
-        client_1.CampaignType.discountPrice,
-    ], {
+    type: zod_1.z.enum([client_1.CampaignType.buyToGetFree, client_1.CampaignType.discountPercentage, client_1.CampaignType.discountPrice], {
         required_error: "type is required",
         invalid_type_error: "type is not valid",
     }),
@@ -41,7 +37,13 @@ const create = zod_1.z
         .optional(),
 })
     .strict();
+const addProduct = zod_1.z.object({
+    body: zod_1.z.array(zod_1.z.object({
+        productId: zod_1.z.string(),
+    })),
+});
 const campaignValidation = {
     create,
+    addProduct,
 };
 exports.default = campaignValidation;

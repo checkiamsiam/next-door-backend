@@ -91,18 +91,13 @@ const getCampaigns = async (
     queryFeatures.populate &&
     Object.keys(queryFeatures.populate).length > 0
   ) {
+    const queryFeaturePopulateCopy: Prisma.CampaignInclude = {
+      ...queryFeatures.populate,
+    };
+
     query.include = {
       _count: true,
-      freeItems: {
-        include: {
-          product: true,
-        },
-      },
-      products: {
-        include: {
-          product: true,
-        },
-      },
+      ...queryFeaturePopulateCopy,
     };
   } else {
     if (queryFeatures.fields && Object.keys(queryFeatures.fields).length > 0) {
@@ -121,8 +116,7 @@ const getCampaigns = async (
 };
 
 const getSingleCampaign = async (
-  id: string,
-  queryFeatures: IQueryFeatures
+  id: string
 ): Promise<Partial<Campaign> | null> => {
   const query: Prisma.CampaignFindUniqueArgs = {
     where: {
@@ -130,23 +124,19 @@ const getSingleCampaign = async (
     },
   };
 
-  if (
-    queryFeatures.populate &&
-    Object.keys(queryFeatures.populate).length > 0
-  ) {
-    const queryFeaturePopulateCopy: Prisma.CampaignInclude = {
-      ...queryFeatures.populate,
-    };
-
-    query.include = {
-      _count: true,
-      ...queryFeaturePopulateCopy,
-    };
-  } else {
-    if (queryFeatures.fields && Object.keys(queryFeatures.fields).length > 0) {
-      query.select = { id: true, ...queryFeatures.fields };
-    }
-  }
+  query.include = {
+    _count: true,
+    freeItems: {
+      include: {
+        product: true,
+      },
+    },
+    products: {
+      include: {
+        product: true,
+      },
+    },
+  };
 
   const result: Partial<Campaign> | null = await prisma.campaign.findUnique(
     query
@@ -155,10 +145,31 @@ const getSingleCampaign = async (
   return result;
 };
 
+const addProduct = async (
+  id: string,
+  products: { productId: string }[]
+): Promise<void> => {
+  await prisma.$transaction(async (txc) => {
+    const campaignItems = products.map((item) => {
+      return {
+        ...item,
+        campaignId: id,
+      };
+    });
+
+    const result = await txc.campaignItems.createMany({
+      data: campaignItems,
+    });
+
+    return result;
+  });
+};
+
 const campaignService = {
   create,
   getCampaigns,
   getSingleCampaign,
+  addProduct,
 };
 
 export default campaignService;

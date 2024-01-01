@@ -46,8 +46,17 @@ const create = z
   })
   .strict();
 
+const addProduct = z.object({
+  body: z.array(
+    z.object({
+      productId: z.string(),
+    })
+  ),
+});
+
 const campaignValidation = {
   create,
+  addProduct,
 };
 
 export default campaignValidation;

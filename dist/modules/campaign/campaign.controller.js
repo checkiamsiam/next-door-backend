@@ -57,9 +57,19 @@ const getSingleCampaign = (0, catchAsyncError_util_1.default)((req, res) => __aw
         data: result,
     });
 }));
+const addProduct = (0, catchAsyncError_util_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield campaign_service_1.default.addProduct(id, req.body);
+    (0, sendResponse_util_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        data: result,
+    });
+}));
 const campaignController = {
     createCampaign,
     getCampaigns,
     getSingleCampaign,
+    addProduct,
 };
 exports.default = campaignController;

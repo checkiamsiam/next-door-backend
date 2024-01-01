@@ -43,7 +43,7 @@ const getSingleCampaign: RequestHandler = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const id: string = req.params.id;
     const result: Partial<Campaign> | null =
-      await campaignService.getSingleCampaign(id, req.queryFeatures);
+      await campaignService.getSingleCampaign(id);
     if (!result) {
       throw new AppError("Campaign Not Found", httpStatus.NOT_FOUND);
     }
@@ -55,10 +55,24 @@ const getSingleCampaign: RequestHandler = catchAsyncErrors(
   }
 );
 
+const addProduct: RequestHandler = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const id: string = req.params.id;
+    await campaignService.addProduct(id, req.body);
+
+    sendResponse<Partial<Campaign>>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "products added successfully",
+    });
+  }
+);
+
 const campaignController = {
   createCampaign,
   getCampaigns,
   getSingleCampaign,
+  addProduct,
 };
 
 export default campaignController;
