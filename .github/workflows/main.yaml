@@ -31,4 +31,4 @@ jobs:
           path: dist/
       - run: npm install -g vercel
       - run: vercel --token ${{ secrets.VERCEL_TOKEN }}
-      - run: vercel --prod --build-output dist --confirm
+      - run: sleep 10 && vercel --prod --build-output dist --confirm
