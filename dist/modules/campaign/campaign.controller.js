@@ -47,7 +47,7 @@ const getCampaigns = (0, catchAsyncError_util_1.default)((req, res) => __awaiter
 }));
 const getSingleCampaign = (0, catchAsyncError_util_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const result = yield campaign_service_1.default.getSingleCampaign(id, req.queryFeatures);
+    const result = yield campaign_service_1.default.getSingleCampaign(id);
     if (!result) {
         throw new customError_util_1.default("Campaign Not Found", http_status_1.default.NOT_FOUND);
     }
@@ -59,11 +59,11 @@ const getSingleCampaign = (0, catchAsyncError_util_1.default)((req, res) => __aw
 }));
 const addProduct = (0, catchAsyncError_util_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const result = yield campaign_service_1.default.addProduct(id, req.body);
+    yield campaign_service_1.default.addProduct(id, req.body);
     (0, sendResponse_util_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        data: result,
+        message: "products added successfully",
     });
 }));
 const campaignController = {

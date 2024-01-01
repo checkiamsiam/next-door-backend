@@ -80,19 +80,8 @@ const getCampaigns = (queryFeatures) => __awaiter(void 0, void 0, void 0, functi
         orderBy: queryFeatures.sort,
     };
     if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
-        query.include = {
-            _count: true,
-            freeItems: {
-                include: {
-                    product: true,
-                },
-            },
-            products: {
-                include: {
-                    product: true,
-                },
-            },
-        };
+        const queryFeaturePopulateCopy = Object.assign({}, queryFeatures.populate);
+        query.include = Object.assign({ _count: true }, queryFeaturePopulateCopy);
     }
     else {
         if (queryFeatures.fields && Object.keys(queryFeatures.fields).length > 0) {
@@ -105,44 +94,38 @@ const getCampaigns = (queryFeatures) => __awaiter(void 0, void 0, void 0, functi
         total: count,
     };
 });
-const getSingleCampaign = (id, queryFeatures) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleCampaign = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const query = {
         where: {
             id,
         },
     };
-    if (queryFeatures.populate && Object.keys(queryFeatures.populate).length > 0) {
-        const queryFeaturePopulateCopy = Object.assign({}, queryFeatures.populate);
-        query.include = Object.assign({ _count: true }, queryFeaturePopulateCopy);
-    }
-    else {
-        if (queryFeatures.fields && Object.keys(queryFeatures.fields).length > 0) {
-            query.select = Object.assign({ id: true }, queryFeatures.fields);
-        }
-    }
+    query.include = {
+        _count: true,
+        freeItems: {
+            include: {
+                product: true,
+            },
+        },
+        products: {
+            include: {
+                product: true,
+            },
+        },
+    };
     const result = yield prismaClient_1.default.campaign.findUnique(query);
     return result;
 });
 const addProduct = (id, products) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prismaClient_1.default.$transaction((txc) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prismaClient_1.default.$transaction((txc) => __awaiter(void 0, void 0, void 0, function* () {
         const campaignItems = products.map((item) => {
             return Object.assign(Object.assign({}, item), { campaignId: id });
         });
-        const result = yield txc.campaign.update({
-            where: {
-                id,
-            },
-            data: {
-                products: {
-                    createMany: {
-                        data: campaignItems,
-                    },
-                },
-            },
+        const result = yield txc.campaignItems.createMany({
+            data: campaignItems,
         });
         return result;
     }));
-    return result;
 });
 const campaignService = {
     create,
