@@ -10,6 +10,7 @@ const fileUpload_middleware_1 = __importDefault(require("../../middleware/fileUp
 const queryFeatures_middleware_1 = __importDefault(require("../../middleware/queryFeatures.middleware"));
 const campaign_controller_1 = __importDefault(require("./campaign.controller"));
 const campaignRoutes = express_1.default.Router();
+// create campaign without defining including products
 campaignRoutes.post("/create", (0, authorization_middleware_1.default)(client_1.UserRole.admin), (0, fileUpload_middleware_1.default)("banner", "campaign", [
     "image/jpeg",
     "image/jpg",
