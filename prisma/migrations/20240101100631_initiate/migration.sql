@@ -14,9 +14,6 @@ CREATE TYPE "CampaignStatus" AS ENUM ('active', 'disabled');
 CREATE TYPE "CustomerStatus" AS ENUM ('active', 'disabled');
 
 -- CreateEnum
-CREATE TYPE "CampaignStaus" AS ENUM ('active', 'disabled');
-
--- CreateEnum
 CREATE TYPE "CampaignType" AS ENUM ('discountPrice', 'discountPercentage', 'buyToGetFree');
 
 -- CreateEnum
@@ -138,9 +135,8 @@ CREATE TABLE "campaigns" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "banner" TEXT,
-    "startDate" TIMESTAMP(3),
-    "endDate" TIMESTAMP(3),
-    "status" "CampaignStaus" NOT NULL DEFAULT 'active',
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "tagline" TEXT,
     "type" "CampaignType" NOT NULL,
     "discountPrice" INTEGER,

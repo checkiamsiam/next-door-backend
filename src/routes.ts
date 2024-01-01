@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import authRoutes from "./modules/auth/auth.route";
 import brandRoutes from "./modules/brand/brand.route";
+import campaignRoutes from "./modules/campaign/campaign.route";
 import categoryRoutes from "./modules/category/category.route";
 import notificationRoutes from "./modules/notification/notification.route";
 import productRoutes from "./modules/product/product.route";
@@ -34,6 +35,10 @@ const routes: { path: string; route: Router }[] = [
   {
     path: "/product",
     route: productRoutes,
+  },
+  {
+    path: "/campaign",
+    route: campaignRoutes,
   },
   {
     path: "/search",
