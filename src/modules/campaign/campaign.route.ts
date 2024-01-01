@@ -9,7 +9,6 @@ import campaignValidation from "./campaign.validation";
 
 const campaignRoutes: Router = express.Router();
 
-// create campaign without defining including products
 campaignRoutes.post(
   "/create",
   authorization(UserRole.admin),
