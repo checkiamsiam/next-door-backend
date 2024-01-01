@@ -1,4 +1,4 @@
-name: Build Node.js TypeScript on push
+name: Build and Deploy Node.js TypeScript to Vercel
 
 on:
   push:
@@ -13,5 +13,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - run: npm i
+      - run: npm ci
       - run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/  # Changed to dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/  # Changed to dist/
+      - run: npm install -g vercel
+      - run: vercel login --token ${{ secrets.VERCEL_TOKEN }}
+      - run: vercel --prod --build-output dist  # Changed to dist
