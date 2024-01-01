@@ -7,113 +7,219 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String   @id @default(uuid())
-  name     String
-  email    String   @unique
-  password String
-  role     UserRole @default(customer)
-  phone    String
-  adress   String
+model Admin {
+  id    String @unique
+  name  String
+  phone String @unique
+
+  user User?
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  orders    Order[]
 
+  @@id([id])
+  @@map("admins")
+}
+
+model Customer {
+  id      String         @unique
+  name    String
+  address String?
+  city    String?
+  country String?
+  phone   String         @unique
+  status  CustomerStatus @default(active)
+
+  user User?
+
+  createdAt     DateTime?              @default(now())
+  updatedAt     DateTime?              @updatedAt
+  orders        Order[]
+  notifications CustomerNotification[]
+
+  @@id([id])
+  @@map("customers")
+}
+
+model User {
+  id       String   @unique
+  username String   @unique
+  email    String   @unique
+  password String
+  role     UserRole @default(customer)
+
+  customerId String?   @unique
+  customer   Customer? @relation(fields: [customerId], references: [id], map: "user_customer_id")
+
+  adminId String? @unique
+  admin   Admin?  @relation(fields: [adminId], references: [id], map: "user_admin_id")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@id([id])
   @@map("users")
 }
 
 model Category {
-  id            String        @id @default(uuid())
-  title         String
-  icon          String
-  isFeatured    Boolean       @default(false)
-  createdAt     DateTime?     @default(now())
-  updatedAt     DateTime?     @updatedAt
+  id            String          @unique
+  title         String          @unique
+  icon          String?
+  createdAt     DateTime?       @default(now())
+  updatedAt     DateTime?       @updatedAt
   subCategories SubCategory[]
-  brands        Brand[]
   products      Product[]
+  brands        CategoryBrand[]
 
+  @@id([id])
   @@map("categories")
 }
 
 model SubCategory {
-  id         String    @id @default(uuid())
-  title      String
-  icon       String
+  id         String    @unique
+  title      String    @unique
+  icon       String?
   categoryId String
-  category   Category  @relation(fields: [categoryId], references: [id])
-  isFeatured Boolean   @default(false)
+  category   Category  @relation(fields: [categoryId], references: [id], map: "sub_category_category_id")
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
   products   Product[]
 
+  @@id([id])
   @@map("sub_categories")
 }
 
 model Brand {
-  id         String    @id @default(uuid())
-  title      String
-  categoryId String
-  category   Category  @relation(fields: [categoryId], references: [id])
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
+  id         String          @unique
+  title      String          @unique
+  logo       String?
+  createdAt  DateTime?       @default(now())
+  updatedAt  DateTime?       @updatedAt
   products   Product[]
+  categories CategoryBrand[]
 
+  @@id([id])
   @@map("brands")
 }
 
-model Product {
-  id                String          @id @default(uuid())
-  title             String
-  regularPrice      String
-  salesPrice        Float
-  thumbnail         String
-  images            Json
-  status            ProductStatus   @default(inStock)
-  discription       String
-  campaign          ProductCampaign @default(regular)
-  keyFeatures       Json
-  besicSpecifiction Json
-  categoryId        String
-  category          Category        @relation(fields: [categoryId], references: [id])
-  subCategoryId     String
-  subCategory       SubCategory     @relation(fields: [subCategoryId], references: [id])
-  brandId           String
-  brand             Brand           @relation(fields: [brandId], references: [id])
-  createdAt         DateTime?       @default(now())
-  updatedAt         DateTime?       @updatedAt
-  orderItems        OrderItem[]
+model CategoryBrand {
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], map: "category_brand_category_id")
+  brandId    String
+  brand      Brand    @relation(fields: [brandId], references: [id], map: "category_brand_brand_id")
 
+  @@id([categoryId, brandId])
+  @@map("category_brands")
+}
+
+model Product {
+  id                String              @unique
+  title             String
+  thumbnail         String
+  images            Json?
+  salePrice         Int
+  regularPrice      Int
+  status            ProductStatus       @default(active)
+  description       Json?
+  keyFeatures       Json?
+  specifications    Json?
+  categoryId        String
+  category          Category            @relation(fields: [categoryId], references: [id], map: "product_category_id")
+  subCategoryId     String
+  subCategory       SubCategory         @relation(fields: [subCategoryId], references: [id], map: "product_sub_category_id")
+  brandId           String
+  brand             Brand               @relation(fields: [brandId], references: [id], map: "product_brand_id")
+  createdAt         DateTime?           @default(now())
+  updatedAt         DateTime?           @updatedAt
+  orders            OrderItem[]
+  campaigns         CampaignItems[]
+  campaignFreeItems CampaignFreeItems[]
+
+  @@id([id])
   @@map("products")
 }
 
+model Campaign {
+  id                 String        @unique
+  name               String
+  description        String?
+  banner             String?
+  startDate          DateTime?
+  endDate            DateTime?
+  status             CampaignStaus @default(active)
+  tagline            String?
+  type               CampaignType
+  discountPrice      Int?
+  discountPercentage Int?
+
+  products  CampaignItems[]
+  freeItems CampaignFreeItems[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@id([id])
+  @@map("campaigns")
+}
+
+model CampaignItems {
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], map: "campaign_items_campaign_id")
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], map: "campaign_product_id")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@id([campaignId, productId])
+  @@map("campaigns_items")
+}
+
+model CampaignFreeItems {
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], map: "free_items_campaign_id")
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], map: "free_product_id")
+
+  quantity  Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@id([campaignId, productId])
+  @@map("free_items")
+}
+
 model Order {
-  id                 String        @id @default(uuid())
-  userId             String
-  user               User          @relation(fields: [userId], references: [id])
-  recipientFirstName String
-  recipientLastName  String
-  recipientPhone     String
-  recipientEmail     String
-  recipientThana     String
-  recipientDivision  String
-  totalPrice         Float
-  paymentStatus      paymentStatus @default(pending)
-  shipingStatus      shipingStatus @default(pending)
+  id               String   @unique
+  customerId       String
+  customer         Customer @relation(fields: [customerId], references: [id], map: "order_customer_id")
+  recipietName     String
+  recipietPhone    String
+  recipietEmail    String
+  recipietAddress  String
+  recipietThana    String
+  recipietDivision String
+  totalPrice       Int
 
-  createdAt  DateTime?   @default(now())
-  updatedAt  DateTime?   @updatedAt
-  orderItems OrderItem[]
+  paymentStatus PaymentStatus
+  shipingStatus ShipingStatus
+  invoice       String?
 
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
+  products  OrderItem[]
+
+  @@id([id])
   @@map("orders")
 }
 
 model OrderItem {
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], map: "order_item_product_id")
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], map: "order_item_order_id")
   quantity  Int
 
   createdAt DateTime? @default(now())
@@ -123,30 +229,87 @@ model OrderItem {
   @@map("order_items")
 }
 
-enum shipingStatus {
+model AdminNotification {
+  id        Int                    @unique @default(autoincrement())
+  title     String
+  message   String
+  type      AdminNotificationType?
+  refId     String?
+  read      Boolean                @default(false)
+  createdAt DateTime?              @default(now())
+  updatedAt DateTime?              @updatedAt
+
+  @@id([id])
+  @@map("admin_notifications")
+}
+
+model CustomerNotification {
+  id         Int                       @unique @default(autoincrement())
+  customerId String
+  customer   Customer                  @relation(fields: [customerId], references: [id], map: "customer_notification_customer_id")
+  type       CustomerNotificationType?
+  refId      String?
+  title      String
+  message    String
+  url        String?
+  read       Boolean                   @default(false)
+  createdAt  DateTime?                 @default(now())
+  updatedAt  DateTime?                 @updatedAt
+
+  @@id([id])
+  @@map("user_notifications")
+}
+
+enum ShipingStatus {
   pending
-  shiping
+  processing
+  shipped
   delivered
+  canceled
 }
 
-enum paymentStatus {
+enum PaymentStatus {
   pending
+  partial
   paid
-  advancedSomething
-}
-
-enum ProductCampaign {
-  featured
-  regular
-  flashSale
+  canceled
 }
 
 enum ProductStatus {
-  inStock
-  outOfStock
+  active
+  disabled
+}
+
+enum CampaignStatus {
+  active
+  disabled
+}
+
+enum CustomerStatus {
+  active
+  disabled
+}
+
+enum CampaignStaus {
+  active
+  disabled
+}
+
+enum CampaignType {
+  discountPrice
+  discountPercentage
+  buyToGetFree
 }
 
 enum UserRole {
   admin
   customer
+}
+
+enum AdminNotificationType {
+  order
+}
+
+enum CustomerNotificationType {
+  orderStatus
 }
