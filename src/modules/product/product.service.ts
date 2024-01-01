@@ -71,7 +71,14 @@ const getProducts = async (
 ): Promise<IQueryResult<Product>> => {
   const whereConditions: Prisma.ProductWhereInput =
     prismaHelper.findManyQueryHelper<Prisma.ProductWhereInput>(queryFeatures, {
-      searchFields: ["title"],
+      searchFields: [
+        "title",
+        "description",
+        "keyFeatures",
+        "specifications",
+        "salePrice",
+        "regularPrice",
+      ],
       relationalFields: {
         categoryId: "category",
         brandId: "brand",
