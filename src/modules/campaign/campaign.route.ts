@@ -7,6 +7,7 @@ import campaignController from "./campaign.controller";
 
 const campaignRoutes: Router = express.Router();
 
+// create campaign without defining including products
 campaignRoutes.post(
   "/create",
   authorization(UserRole.admin),
