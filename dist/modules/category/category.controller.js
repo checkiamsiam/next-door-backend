@@ -20,10 +20,7 @@ const category_service_1 = __importDefault(require("./category.service"));
 const category_validation_1 = __importDefault(require("./category.validation"));
 const createCategory = (0, catchAsyncError_util_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const file = req.file;
-    if (!file) {
-        throw new customError_util_1.default("File isn't Upload Properly", http_status_1.default.INTERNAL_SERVER_ERROR);
-    }
-    else {
+    if (file) {
         req.body.icon = file.path;
     }
     yield category_validation_1.default.create.parseAsync(req.body);

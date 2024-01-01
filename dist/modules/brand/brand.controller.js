@@ -20,10 +20,7 @@ const brand_service_1 = __importDefault(require("./brand.service"));
 const brand_validation_1 = __importDefault(require("./brand.validation"));
 const createBrand = (0, catchAsyncError_util_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const file = req.file;
-    if (!file) {
-        throw new customError_util_1.default("File isn't Upload Properly", http_status_1.default.INTERNAL_SERVER_ERROR);
-    }
-    else {
+    if (file) {
         req.body.logo = file.path;
     }
     yield brand_validation_1.default.create.parseAsync(req.body);

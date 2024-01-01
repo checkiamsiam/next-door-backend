@@ -24,8 +24,10 @@ const createProduct = (0, catchAsyncError_util_1.default)((req, res) => __awaite
         throw new customError_util_1.default("File isn't Upload Properly", http_status_1.default.INTERNAL_SERVER_ERROR);
     }
     else {
-        req.body.image = file.path;
+        req.body.thumbnail = file.path;
     }
+    req.body.salePrice = parseInt(req.body.salePrice);
+    req.body.regularPrice = parseInt(req.body.regularPrice);
     yield product_validation_1.default.create.parseAsync(req.body);
     const result = yield product_service_1.default.create(req.body);
     (0, sendResponse_util_1.default)(res, {

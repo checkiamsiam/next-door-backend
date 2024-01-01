@@ -6,9 +6,11 @@ const create = zod_1.z
     title: zod_1.z.string({
         required_error: "title is required",
     }),
-    logo: zod_1.z.string({
+    logo: zod_1.z
+        .string({
         required_error: "icon is required",
-    }).optional(),
+    })
+        .optional(),
 })
     .strict();
 const update = zod_1.z
