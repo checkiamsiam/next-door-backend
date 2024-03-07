@@ -140,13 +140,12 @@ model Product {
 }
 
 model Campaign {
-  id                 String        @unique
+  id                 String       @unique
   name               String
   description        String?
   banner             String?
-  startDate          DateTime?
-  endDate            DateTime?
-  status             CampaignStaus @default(active)
+  startDate          DateTime
+  endDate            DateTime
   tagline            String?
   type               CampaignType
   discountPrice      Int?
@@ -286,11 +285,6 @@ enum CampaignStatus {
 }
 
 enum CustomerStatus {
-  active
-  disabled
-}
-
-enum CampaignStaus {
   active
   disabled
 }
